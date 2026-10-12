@@ -1,0 +1,2 @@
+# aspnetcore10-otel-grafanacloud-alloy-dbobservability-postgres_contagemacessos
+Exemplo de uso de OpenTelemetry + Grafana Cloud + Alloy (collector) + Tempo (trace) + Loki (logs) + Prometheus (métricas) em uma API REST de dados geográficos baseada em .NET 10 + ASP.NET Core e que utiliza PostgreSQL. Inclui script do Docker Compose para criação de instância do PostgreSQL e do Grafana Alloy (com Database Observability).

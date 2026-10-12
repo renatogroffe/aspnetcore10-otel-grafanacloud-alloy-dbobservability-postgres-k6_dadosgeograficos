@@ -1,6 +1,6 @@
 GRAFANA_CLOUD_API_TOKEN=glc_GRAFANA_CLOUD_API_TOKEN_OPENTELEMETRY
 GRAFANA_CLOUD_OTLP_ENDPOINT=https://otlp-gateway-prod-sa-east-1.grafana.net/otlp
-GRAFANA_CLOUD_INSTANCE_ID=1505678
+GRAFANA_CLOUD_INSTANCE_ID=0000000
 
 # PREENCHER (Grafana Cloud > stack > Prometheus > Details)
 GRAFANA_CLOUD_PROM_URL=https://prometheus-prod-xx-prod-sa-east-1.grafana.net/api/prom/push

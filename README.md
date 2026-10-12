@@ -25,6 +25,18 @@ Visualizando detalhes de uma query de exemplo, com o link para o trace correspon
 
 Visualizando o trace de uma query de exemplo no Grafana Tempo:
 
-![Trace de uma query de exemplo](img/tempo-01.png)
+![Trace de uma query de exemplo 1](img/tempo-01.png)
 
+Detalhes da query no trace e logs associados ao mesmo:
 
+![Trace de uma query de exemplo 1](img/tempo-02.png)
+
+Algumas métricas coletadas via Prometheus:
+
+![Algumas métricas coletadas](img/prometheus-01.png)
+
+Testes executados via k6 para geração dos resultados de instrumentação:
+
+![Tests de carga com k6 1](img/loadtests-01.png)
+
+![Tests de carga com k6 2](img/loadtests-02.png)

@@ -1,0 +1,1 @@
+./k6 run --vus 20 --iterations 300 loadtest-apidadosgeograficos.js

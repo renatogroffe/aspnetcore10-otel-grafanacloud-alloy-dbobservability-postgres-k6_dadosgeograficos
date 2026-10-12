@@ -1,0 +1,46 @@
+services:
+  alloy:
+    image: grafana/alloy:v1.20.1
+    ports:
+      - 12345:12345
+      - 4318:4318
+      - 4317:4317
+    volumes:
+      - ./config.alloy:/etc/alloy/config.alloy
+    environment:
+      GRAFANA_CLOUD_OTLP_ENDPOINT: ${GRAFANA_CLOUD_OTLP_ENDPOINT}
+      GRAFANA_CLOUD_INSTANCE_ID: ${GRAFANA_CLOUD_INSTANCE_ID}
+      GRAFANA_CLOUD_API_TOKEN: ${GRAFANA_CLOUD_API_TOKEN}
+      GRAFANA_CLOUD_PROM_URL: ${GRAFANA_CLOUD_PROM_URL}
+      GRAFANA_CLOUD_PROM_USER: ${GRAFANA_CLOUD_PROM_USER}
+      GRAFANA_CLOUD_LOKI_URL: ${GRAFANA_CLOUD_LOKI_URL}
+      GRAFANA_CLOUD_LOKI_USER: ${GRAFANA_CLOUD_LOKI_USER}
+      ALLOY_LOG_LEVEL: ${ALLOY_LOG_LEVEL:-info}
+      CONNECTION_STRING: postgresql://alloy_o11y:alloy_o11y_pw@postgres:5432/dados_geograficos?sslmode=disable
+    command: run --server.http.listen-addr=0.0.0.0:12345 --storage.path=/var/lib/alloy/data /etc/alloy/config.alloy
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:16.15
+    healthcheck:
+      test: ["CMD-SHELL", "psql -U postgres -d dados_geograficos -c 'select 1' || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    command:
+      - postgres
+      - -c
+      - shared_preload_libraries=pg_stat_statements
+      - -c
+      - track_activity_query_size=4096
+      - -c
+      - pg_stat_statements.track=all
+    volumes:
+      - ./init-observability.sql:/docker-entrypoint-initdb.d/2-init-observability.sql
+      - ./dados_geograficos.sql:/docker-entrypoint-initdb.d/1-dados_geograficos.sql
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"

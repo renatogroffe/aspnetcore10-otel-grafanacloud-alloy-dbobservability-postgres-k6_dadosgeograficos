@@ -1,0 +1,87 @@
+prometheus.exporter.postgres "postgres_postgres" {
+  data_source_names  = [sys.env("CONNECTION_STRING")]
+  enabled_collectors = ["stat_statements"]
+
+  stat_statements {
+    exclude_users = ["alloy_o11y"]
+  }
+}
+
+database_observability.postgres "postgres_postgres" {
+  data_source_name  = sys.env("CONNECTION_STRING")
+  forward_to        = [loki.relabel.database_observability_postgres_postgres.receiver]
+  targets           = prometheus.exporter.postgres.postgres_postgres.targets
+  enable_collectors = ["query_details", "query_samples", "schema_details", "explain_plans"]
+}
+
+loki.relabel "database_observability_postgres_postgres" {
+  forward_to = [loki.write.grafana_cloud_loki.receiver]
+}
+
+discovery.relabel "database_observability_postgres_postgres" {
+  targets = database_observability.postgres.postgres_postgres.targets
+
+  rule {
+    target_label = "job"
+    replacement  = "integrations/db-o11y"
+  }
+  rule {
+    source_labels = ["instance"]
+    target_label  = "dsn"
+  }
+}
+
+prometheus.scrape "database_observability_postgres_postgres" {
+  targets    = discovery.relabel.database_observability_postgres_postgres.output
+  forward_to = [prometheus.remote_write.metrics_service.receiver]
+}
+
+prometheus.remote_write "metrics_service" {
+  endpoint {
+    url = sys.env("GRAFANA_CLOUD_PROM_URL")
+    basic_auth {
+      username = sys.env("GRAFANA_CLOUD_PROM_USER")
+      password = sys.env("GRAFANA_CLOUD_API_TOKEN")
+    }
+  }
+}
+
+loki.write "grafana_cloud_loki" {
+  endpoint {
+    url = sys.env("GRAFANA_CLOUD_LOKI_URL")
+    basic_auth {
+      username = sys.env("GRAFANA_CLOUD_LOKI_USER")
+      password = sys.env("GRAFANA_CLOUD_API_TOKEN")
+    }
+  }
+}
+
+otelcol.receiver.otlp "default" {
+  grpc {
+    endpoint = "0.0.0.0:4317"
+  }
+  http {
+    endpoint = "0.0.0.0:4318"
+  }
+  output {
+    metrics = [otelcol.exporter.otlphttp.grafana_cloud.input]
+    logs    = [otelcol.exporter.otlphttp.grafana_cloud.input]
+    traces  = [otelcol.exporter.otlphttp.grafana_cloud.input]
+  }
+}
+
+otelcol.auth.basic "grafana_cloud" {
+  username = sys.env("GRAFANA_CLOUD_INSTANCE_ID")
+  password = sys.env("GRAFANA_CLOUD_API_TOKEN")
+}
+
+otelcol.exporter.otlphttp "grafana_cloud" {
+  client {
+    endpoint = sys.env("GRAFANA_CLOUD_OTLP_ENDPOINT")
+    auth     = otelcol.auth.basic.grafana_cloud.handler
+  }
+}
+
+logging {
+  level = sys.env("ALLOY_LOG_LEVEL")
+}

@@ -1,0 +1,15 @@
+GRAFANA_CLOUD_API_TOKEN=glc_GRAFANA_CLOUD_API_TOKEN_OPENTELEMETRY
+GRAFANA_CLOUD_OTLP_ENDPOINT=https://otlp-gateway-prod-sa-east-1.grafana.net/otlp
+GRAFANA_CLOUD_INSTANCE_ID=1505678
+
+# PREENCHER (Grafana Cloud > stack > Prometheus > Details)
+GRAFANA_CLOUD_PROM_URL=https://prometheus-prod-xx-prod-sa-east-1.grafana.net/api/prom/push
+GRAFANA_CLOUD_PROM_USER=0000000
+
+# PREENCHER (Grafana Cloud > stack > Loki > Details)
+GRAFANA_CLOUD_LOKI_URL=https://logs-prod-xxx.grafana.net/loki/api/v1/push
+GRAFANA_CLOUD_LOKI_USER=0000000
+
+POSTGRES_PASSWORD=Postgres2026!
+
+ALLOY_LOG_LEVEL=info
